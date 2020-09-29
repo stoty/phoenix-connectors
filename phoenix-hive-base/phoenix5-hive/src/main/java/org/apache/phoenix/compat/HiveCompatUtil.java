@@ -50,6 +50,7 @@ public class HiveCompatUtil {
         // Not to be instantiated
     }
 
+    
     public static ExprNodeGenericFuncDesc getComparisonExpr(ExprNodeGenericFuncDesc comparisonExpr, boolean isNot){
         ExprNodeGenericFuncDesc ret = comparisonExpr;
         try {
