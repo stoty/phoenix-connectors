@@ -17,44 +17,42 @@
  */
 package org.apache.phoenix.hive;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hbase.HBaseTestingUtility;
-import org.apache.hadoop.hbase.MiniHBaseCluster;
-import org.apache.hadoop.hdfs.MiniDFSCluster;
-import org.apache.phoenix.query.BaseTest;
-import org.apache.hadoop.hive.conf.HiveConf;
-import org.apache.hadoop.hive.ql.QTestProcessExecResult;
-import org.apache.phoenix.end2end.ParallelStatsDisabledTest;
-import org.apache.phoenix.execute.UpsertSelectOverlappingBatchesIT.SlowBatchRegionObserver;
-import org.apache.phoenix.jdbc.PhoenixDriver;
-import org.apache.phoenix.query.QueryServices;
-import org.apache.phoenix.util.PhoenixRuntime;
-import org.apache.phoenix.util.PropertiesUtil;
-import org.apache.phoenix.util.ReadOnlyProps;
-import org.apache.phoenix.util.TestUtil;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import org.apache.phoenix.thirdparty.com.google.common.base.Throwables;
-import org.apache.phoenix.thirdparty.com.google.common.collect.Maps;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.*;
-import java.util.Properties;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.concurrent.NotThreadSafe;
-
 import static org.apache.phoenix.util.TestUtil.TEST_PROPERTIES;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.IOException;
+import java.security.Policy;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.annotation.concurrent.NotThreadSafe;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hive.conf.HiveConf;
+import org.apache.hadoop.hive.ql.QTestArguments;
+import org.apache.hadoop.hive.ql.QTestMiniClusters;
+import org.apache.hadoop.hive.ql.QTestProcessExecResult;
+import org.apache.hadoop.hive.ql.QTestUtil;
+import org.apache.hadoop.hive.ql.processors.CommandProcessorResponse;
+import org.apache.hive.hcatalog.DerbyPolicy;
+import org.apache.phoenix.end2end.ParallelStatsDisabledTest;
+import org.apache.phoenix.query.BaseTest;
+import org.apache.phoenix.query.QueryServices;
+import org.apache.phoenix.thirdparty.com.google.common.base.Throwables;
+import org.apache.phoenix.thirdparty.com.google.common.collect.Maps;
+import org.apache.phoenix.util.PropertiesUtil;
+import org.apache.phoenix.util.ReadOnlyProps;
+import org.junit.AfterClass;
+import org.junit.experimental.categories.Category;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for all Hive Phoenix integration tests that may be run with Tez or MR mini cluster
@@ -64,13 +62,16 @@ import static org.junit.Assert.fail;
 public class BaseHivePhoenixStoreIT extends BaseTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseHivePhoenixStoreIT.class);
-    protected static HiveTestUtil qt;
+    protected static QTestUtil qt;
     protected static String hiveOutputDir;
     protected static String hiveLogDir;
 
-    public static void setup(HiveTestUtil.MiniClusterType clusterType) throws Exception {
+    // TODO This should be replaced with a copy of the HBase test environment setup code from Hive
+    public static void setup(QTestMiniClusters.MiniClusterType clusterType) throws Exception {
         System.clearProperty("test.build.data");
 
+        Policy.setPolicy(new DerbyPolicy());
+        
         //Setup Hbase minicluster + Phoenix first
         Map<String, String> serverProps = Maps.newHashMapWithExpectedSize(3);
         serverProps.put(QueryServices.DROP_METADATA_ATTRIB, Boolean.toString(true));
@@ -101,13 +102,29 @@ public class BaseHivePhoenixStoreIT extends BaseTest {
         System.setProperty("test.build.data", hiveBuildDataDir.toString());
 
         System.setProperty("test.tmp.dir", testRoot.toString());
-        System.setProperty("test.warehouse.dir", (new Path(testRoot, "warehouse")).toString());
+        // TODO set in testHiveConf ?
         System.setProperty(HiveConf.ConfVars.METASTORE_SCHEMA_VERIFICATION.toString(), "false");
-        //System.setProperty(HiveConf.ConfVars.METASTORE_AUTO_CREATE_ALL.toString(),"true");
+
+        Map<HiveConf.ConfVars, String> testHiveConf = new HashMap<>();
+        testHiveConf.put(HiveConf.ConfVars.METASTORE_WAREHOUSE,
+            (new Path(testRoot, "warehouse")).toString());
+        testHiveConf.put(HiveConf.ConfVars.HIVE_TESTING_REMOVE_LOGS,
+            "false");
+        testHiveConf.put(HiveConf.ConfVars.METASTORE_AUTO_CREATE_ALL,"true");
+        testHiveConf.put(HiveConf.ConfVars.HIVE_CHECK_CROSS_PRODUCT,"false");
+
         try {
-            qt = new HiveTestUtil(hiveOutputDir, hiveLogDir, clusterType, "", "0.20",null, null, false);
-            // do a one time initialization
-            qt.createSources();
+            QTestArguments qtArgs = QTestArguments.QTestArgumentsBuilder.instance()
+                    .withOutDir(hiveOutputDir)
+                    .withLogDir(hiveLogDir)
+                    .withClusterType(clusterType)
+                    .withCustomConfigValueMap(testHiveConf)
+                    .build();
+            // These were set for Hive3, but are not required for Hive4
+            // conf.set("mapreduce.job.name", "test");
+            // conf.set("hive.mapred.mode", "nonstrict");
+            // conf.set("hive.strict.checks.cartesian.product", "false");
+            qt = new QTestUtil(qtArgs);
         } catch (Exception e) {
             LOG.error("Unexpected exception in setup: " + e.getMessage(), e);
             fail("Unexpected exception in setup"+Throwables.getStackTraceAsString(e));
@@ -125,29 +142,27 @@ public class BaseHivePhoenixStoreIT extends BaseTest {
         long startTime = System.currentTimeMillis();
         try {
             LOG.info("Begin query: " + fname);
-            qt.addFile(fpath);
-
-            if (qt.shouldBeSkipped(fname)) {
-                LOG.info("Test " + fname + " skipped");
-                return;
-            }
-
-            qt.cliInit(fname);
             qt.clearTestSideEffects();
-            int ecode = qt.executeClient(fname);
-            if (ecode != 0) {
-                qt.failed(ecode, fname, null);
+            qt.newSession();
+            qt.setInputFile(fpath);
+            qt.cliInit();
+
+            CommandProcessorResponse resp = qt.executeClient();
+            if (resp.getMessage() != null &&  !resp.getMessage().isEmpty()) {
+                qt.failedQuery(null, -9999, fname, "Command has failed with response:" + resp.toString());
                 return;
             }
 
-            QTestProcessExecResult result = qt.checkCliDriverResults(fname);
+            QTestProcessExecResult result = qt.checkCliDriverResults();
             if (result.getReturnCode() != 0) {
               qt.failedDiff(result.getReturnCode(), fname, result.getCapturedOutput());
             }
             qt.clearPostTestEffects();
 
+        } catch (java.lang.AssertionError a) {
+            throw a;
         } catch (Throwable e) {
-            qt.failed(new Exception(e), fname, null);
+            qt.failedQuery(new Exception(e), -9999, fname, "Command has thrown exception");
         }
 
         long elapsedTime = System.currentTimeMillis() - startTime;

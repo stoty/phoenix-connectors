@@ -20,12 +20,12 @@ package org.apache.phoenix.hive.ql.pushdown;
 import org.apache.hadoop.hive.ql.exec.FunctionRegistry;
 import org.apache.hadoop.hive.ql.lib.DefaultGraphWalker;
 import org.apache.hadoop.hive.ql.lib.DefaultRuleDispatcher;
-import org.apache.hadoop.hive.ql.lib.Dispatcher;
-import org.apache.hadoop.hive.ql.lib.GraphWalker;
+import org.apache.hadoop.hive.ql.lib.SemanticDispatcher;
+import org.apache.hadoop.hive.ql.lib.SemanticGraphWalker;
 import org.apache.hadoop.hive.ql.lib.Node;
-import org.apache.hadoop.hive.ql.lib.NodeProcessor;
+import org.apache.hadoop.hive.ql.lib.SemanticNodeProcessor;
 import org.apache.hadoop.hive.ql.lib.NodeProcessorCtx;
-import org.apache.hadoop.hive.ql.lib.Rule;
+import org.apache.hadoop.hive.ql.lib.SemanticRule;
 import org.apache.hadoop.hive.ql.metadata.HiveException;
 import org.apache.hadoop.hive.ql.parse.SemanticException;
 import org.apache.hadoop.hive.ql.plan.ExprNodeColumnDesc;
@@ -46,6 +46,7 @@ import org.apache.hadoop.hive.ql.udf.generic.GenericUDFToBinary;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFToChar;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFToDate;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFToDecimal;
+import org.apache.hadoop.hive.ql.udf.generic.GenericUDFToString;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFToUnixTimeStamp;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFToUtcTimestamp;
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDFToVarchar;
@@ -143,8 +144,8 @@ public class PhoenixPredicateAnalyzer {
     public ExprNodeDesc analyzePredicate(ExprNodeDesc predicate, final List<PhoenixSearchCondition>
             searchConditions) {
 
-        Map<Rule, NodeProcessor> opRules = new LinkedHashMap<Rule, NodeProcessor>();
-        NodeProcessor nodeProcessor = new NodeProcessor() {
+        Map<SemanticRule, SemanticNodeProcessor> opRules = new LinkedHashMap<SemanticRule, SemanticNodeProcessor>();
+        SemanticNodeProcessor nodeProcessor = new SemanticNodeProcessor() {
             @Override
             public Object process(Node nd, Stack<Node> stack, NodeProcessorCtx procCtx, Object...
                     nodeOutputs) throws SemanticException {
@@ -165,8 +166,8 @@ public class PhoenixPredicateAnalyzer {
             }
         };
 
-        Dispatcher disp = new DefaultRuleDispatcher(nodeProcessor, opRules, null);
-        GraphWalker ogw = new DefaultGraphWalker(disp);
+        SemanticDispatcher disp = new DefaultRuleDispatcher(nodeProcessor, opRules, null);
+        SemanticGraphWalker ogw = new DefaultGraphWalker(disp);
         ArrayList<Node> topNodes = new ArrayList<Node>();
         topNodes.add(predicate);
         HashMap<Node, Object> nodeOutput = new HashMap<Node, Object>();
@@ -197,6 +198,7 @@ public class PhoenixPredicateAnalyzer {
         GenericUDF udf = funcDesc.getGenericUDF();
         // check if its a simple cast expression.
     if ((udf instanceof GenericUDFBridge || udf instanceof GenericUDFToBinary
+        || udf instanceof GenericUDFToString
         || udf instanceof GenericUDFToChar || udf instanceof GenericUDFToVarchar
         || udf instanceof GenericUDFToDecimal || udf instanceof GenericUDFToDate
         || udf instanceof GenericUDFToUnixTimeStamp || udf instanceof GenericUDFToUtcTimestamp)

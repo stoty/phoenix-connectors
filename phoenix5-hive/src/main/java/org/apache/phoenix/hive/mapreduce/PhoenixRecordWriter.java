@@ -356,4 +356,8 @@ public class PhoenixRecordWriter<T extends DBWritable> implements RecordWriter<N
     public long getBufferedRowCount() {
         return numRecords;
     }
+
+    public Path getUpdatedFilePath() {
+        return null;
+    }
 }

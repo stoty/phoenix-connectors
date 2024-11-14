@@ -337,4 +337,8 @@ public class PhoenixRecordUpdater implements RecordUpdater {
         return numRecords;
     }
 
+    public Path getUpdatedFilePath() {
+        return null;
+    }
+
 }

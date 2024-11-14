@@ -15,30 +15,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.hadoop.hive.ql.qoption;
 
-package org.apache.phoenix.hive;
+import org.apache.hadoop.hive.ql.QTestUtil;
 
-import static org.junit.Assert.fail;
+/**
+ * Qtest options might be usefull to prepare the test environment or do some extra checks/cleanup.
+ */
+public interface QTestOptionHandler {
 
-import org.apache.hadoop.hive.ql.QTestMiniClusters;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+  /**
+   * For a matching option; the arguments are supplied to the handler by this method. 
+   */
+  void processArguments(String arguments);
 
-public class HiveMapReduceIT extends HivePhoenixStoreIT {
+  /**
+   * Invoked before the actual test is executed.
+   * 
+   * At the time of this call all the options for the actual test is already processed.
+   */
+  void beforeTest(QTestUtil qt) throws Exception;
 
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        setup(QTestMiniClusters.MiniClusterType.MR);
-    }
+  /**
+   * Invoked right after the test is executed.
+   * 
+   * Can be used to cleanup things and/or clear internal state of the handler.
+   */
+  void afterTest(QTestUtil qt) throws Exception;
 
-    @Override
-    @Test
-    @Ignore
-    /**
-     * Ignoring because projection pushdown is incorrect for MR when there are multiple aliases (ref:HIVE-18872)
-     */
-    public void testJoinColumnMaps() throws Exception {
-
-    }
 }

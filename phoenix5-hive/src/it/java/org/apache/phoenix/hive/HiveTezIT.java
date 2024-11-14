@@ -18,16 +18,17 @@
 
 package org.apache.phoenix.hive;
 
+import org.apache.hadoop.hive.ql.QTestMiniClusters;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 
-// I was unable to find a combination classpath that works with Phoenix 5.2, and the unrelocated
-// hive-exec uberjar that is added by the tez job runner.
 @Ignore
+// This time, we cannot run tests because of unshaded protobuf conflict between 
+// HBase (2.5.0) and Tez (3.x)
 public class HiveTezIT extends HivePhoenixStoreIT {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        setup(HiveTestUtil.MiniClusterType.tez);
+        setup(QTestMiniClusters.MiniClusterType.TEZ);
     }
 }

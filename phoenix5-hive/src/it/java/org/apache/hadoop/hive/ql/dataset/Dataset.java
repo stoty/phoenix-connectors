@@ -15,30 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.hadoop.hive.ql.dataset;
 
-package org.apache.phoenix.hive;
+/**
+ * Dataset: simple class representation of a dataset
+ */
+public class Dataset {
+  public static final String INIT_FILE_NAME = "load.hive.sql";
+  public static final String CLEANUP_FILE_NAME = "cleanup.hive.sql";
 
-import static org.junit.Assert.fail;
+  private String table;
 
-import org.apache.hadoop.hive.ql.QTestMiniClusters;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+  public Dataset(String table) {
+    this.table = table;
+  }
 
-public class HiveMapReduceIT extends HivePhoenixStoreIT {
-
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        setup(QTestMiniClusters.MiniClusterType.MR);
-    }
-
-    @Override
-    @Test
-    @Ignore
-    /**
-     * Ignoring because projection pushdown is incorrect for MR when there are multiple aliases (ref:HIVE-18872)
-     */
-    public void testJoinColumnMaps() throws Exception {
-
-    }
+  public String getTable(){
+    return table;
+  }
 }

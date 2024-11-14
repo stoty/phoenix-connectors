@@ -16,29 +16,40 @@
  * limitations under the License.
  */
 
-package org.apache.phoenix.hive;
+package org.apache.hadoop.hive.ql.dataset;
 
-import static org.junit.Assert.fail;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.apache.hadoop.hive.ql.QTestMiniClusters;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+/**
+ * DatasetCollection: utility wrapper class for a set of datasets
+ */
+public class DatasetCollection {
+  private Set<Dataset> coll = new HashSet<Dataset>();
 
-public class HiveMapReduceIT extends HivePhoenixStoreIT {
+  public DatasetCollection() {
+  }
 
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        setup(QTestMiniClusters.MiniClusterType.MR);
+  public DatasetCollection(Set<String> datasets) {
+    for (String datasetName : datasets) {
+      add(datasetName);
     }
+  }
 
-    @Override
-    @Test
-    @Ignore
-    /**
-     * Ignoring because projection pushdown is incorrect for MR when there are multiple aliases (ref:HIVE-18872)
-     */
-    public void testJoinColumnMaps() throws Exception {
+  public void add(Dataset dataset) {
+    coll.add(dataset);
+  }
 
-    }
+  public void add(String table) {
+    add(new Dataset(table));
+  }
+
+  public Set<Dataset> getDatasets() {
+    return coll;
+  }
+
+  public Set<String> getTables() {
+    return coll.stream().map(d -> d.getTable()).collect(Collectors.toSet());
+  }
 }

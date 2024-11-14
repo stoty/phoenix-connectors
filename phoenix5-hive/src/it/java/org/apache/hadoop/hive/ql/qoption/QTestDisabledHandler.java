@@ -15,30 +15,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.hadoop.hive.ql.qoption;
 
-package org.apache.phoenix.hive;
+import org.apache.hadoop.hive.ql.QTestUtil;
+import org.junit.Assume;
 
-import static org.junit.Assert.fail;
+import com.google.common.base.Strings;
 
-import org.apache.hadoop.hive.ql.QTestMiniClusters;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+/**
+ * QTest disabled directive handler
+ *
+ * Example:
+ * --! qt:disabled:reason
+ *
+ */
+public class QTestDisabledHandler implements QTestOptionHandler {
 
-public class HiveMapReduceIT extends HivePhoenixStoreIT {
+  private String message;
 
-    @BeforeClass
-    public static void setUpBeforeClass() throws Exception {
-        setup(QTestMiniClusters.MiniClusterType.MR);
+  @Override
+  public void processArguments(String arguments) {
+    message = arguments;
+    if (Strings.isNullOrEmpty(message)) {
+      throw new RuntimeException("you have to give a reason why it was ignored");
     }
+  }
 
-    @Override
-    @Test
-    @Ignore
-    /**
-     * Ignoring because projection pushdown is incorrect for MR when there are multiple aliases (ref:HIVE-18872)
-     */
-    public void testJoinColumnMaps() throws Exception {
+  @Override
+  public void beforeTest(QTestUtil qt) throws Exception {
+    Assume.assumeTrue(message, (message == null));
+  }
 
-    }
+  @Override
+  public void afterTest(QTestUtil qt) throws Exception {
+    message = null;
+  }
+
 }

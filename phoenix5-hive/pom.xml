@@ -36,10 +36,12 @@
   <properties>
     <top.dir>${project.basedir}/..</top.dir>
     <test.tmp.dir>${project.build.directory}/tmp</test.tmp.dir>
-    <tez.version>0.9.1</tez.version>
-    <commons-lang3.version>3.9</commons-lang3.version>
-    <calcite.version>1.16.0</calcite.version>
     <hive.version>${hive3.version}</hive.version>
+    <hive-storage.version>${hive.version}</hive-storage.version>
+    <tez.version>0.10.3</tez.version>
+    <commons-lang3.version>3.9</commons-lang3.version>
+    <calcite.version>1.25.0</calcite.version>
+    <guava.version>33.2.1-jre</guava.version>
   </properties>
 
   <dependencies>
@@ -84,11 +86,31 @@
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-common</artifactId>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.reload4j</groupId>
+          <artifactId>reload4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-reload4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-mapreduce-client-core</artifactId>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.reload4j</groupId>
+          <artifactId>reload4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-reload4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- Hive dependencies -->
@@ -97,29 +119,12 @@
       <artifactId>hive-common</artifactId>
       <version>${hive.version}</version>
       <scope>provided</scope>
-      <exclusions>
-        <!-- Hadoop won't work with Guava 19 -->
-        <exclusion>
-          <groupId>com.google.guava</groupId>
-          <artifactId>guava</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.eclipse.jetty</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.hive</groupId>
       <artifactId>hive-exec</artifactId>
       <version>${hive.version}</version>
       <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.eclipse.jetty</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId> org.apache.hive</groupId>
@@ -133,12 +138,17 @@
       <version>${hive.version}</version>
       <scope>provided</scope>
     </dependency>
-    <!-- Needed to get the older Derby that Hive requires -->
     <dependency>
-      <groupId> org.apache.hive</groupId>
-      <artifactId>hive-standalone-metastore</artifactId>
+      <groupId>org.apache.hive</groupId>
+      <artifactId>hive-cli</artifactId>
       <version>${hive.version}</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <!-- logging API -->
@@ -170,7 +180,18 @@
     <dependency>
       <groupId>org.apache.hbase</groupId>
       <artifactId>hbase-testing-util</artifactId>
-      <scope>test</scope> <!-- ? -->
+      <scope>test</scope>
+      <exclusions>
+        <!-- Via transitive Hadoop dependency -->
+        <exclusion>
+          <groupId>ch.qos.reload4j</groupId>
+          <artifactId>reload4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-reload4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.hbase</groupId>
@@ -190,9 +211,14 @@
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-hdfs</artifactId>
       <exclusions>
+        <!-- Via transitive Hadoop dependency -->
         <exclusion>
-          <groupId>io.netty</groupId>
-          <artifactId>netty</artifactId>
+          <groupId>ch.qos.reload4j</groupId>
+          <artifactId>reload4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-reload4j</artifactId>
         </exclusion>
       </exclusions>
       <type>test-jar</type>
@@ -206,60 +232,80 @@
     </dependency>
 
     <!-- Hive test dependencies -->
+
+    <!-- FIXME Is this still needed ? Needed to get the older Derby that Hive requires -->
     <dependency>
-      <groupId>org.apache.hive</groupId>
-      <artifactId>hive-cli</artifactId>
+      <groupId> org.apache.hive</groupId>
+      <artifactId>hive-standalone-metastore-common</artifactId>
       <version>${hive.version}</version>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.eclipse.jetty</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
-
-    <!-- Maybe needed for (ignored) Tez Test ? -->
-    <!-- <dependency> -->
-    <!-- <groupId> org.apache.hive</groupId> -->
-    <!-- <artifactId>hive-llap-client</artifactId> -->
-    <!-- <version>${hive.version}</version> -->
-    <!-- <exclusions> -->
-    <!-- <exclusion> -->
-    <!-- <groupId>com.google.guava</groupId> -->
-    <!-- <artifactId>guava</artifactId> -->
-    <!-- </exclusion> -->
-    <!-- </exclusions> -->
-    <!-- <scope>test</scope> -->
-    <!-- </dependency> -->
-    <!-- <dependency> -->
-    <!-- <groupId> org.apache.hive</groupId> -->
-    <!-- <artifactId>hive-serde</artifactId> -->
-    <!-- <version>${hive.version}</version> -->
-    <!-- <exclusions> -->
-    <!-- Fix conflict with Minicluster -->
-    <!-- <exclusion> -->
-    <!-- <groupId>io.netty</groupId> -->
-    <!-- <artifactId>*</artifactId> -->
-    <!-- </exclusion> -->
-    <!-- </exclusions> -->
-    <!-- <scope>test</scope> -->
-    <!-- </dependency> -->
-    <!-- <dependency> -->
-    <!-- <groupId> org.apache.hive</groupId> -->
-    <!-- <artifactId>hive-storage-api</artifactId> -->
-    <!-- <version>${hive-storage.version}</version> -->
-    <!-- <scope>test</scope> -->
-    <!-- </dependency> -->
-
-    <!-- Misc test dependencies -->
+        <dependency>
+            <groupId> org.apache.hive</groupId>
+            <artifactId>hive-llap-server</artifactId>
+            <version>${hive.version}</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
+                <dependency>
+            <groupId> org.apache.hive</groupId>
+            <artifactId>hive-llap-server</artifactId>
+            <version>${hive.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-standalone-metastore-server</artifactId>
+            <version>${hive.version}</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+    </dependency>
+            <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-standalone-metastore-server</artifactId>
+            <version>${hive.version}</version>
+            <scope>test</scope>
+    </dependency>
+            <dependency>
+            <groupId>org.apache.hive.hcatalog</groupId>
+            <artifactId>hive-hcatalog-core</artifactId>
+            <version>${hive.version}</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+    </dependency>
+        <dependency>
+            <groupId> org.apache.hive</groupId>
+            <artifactId>hive-exec</artifactId>
+            <version>${hive.version}</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
+            <groupId> org.apache.hive</groupId>
+            <artifactId>hive-serde</artifactId>
+            <version>${hive.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Misc test dependencies -->
     <dependency>
       <groupId>org.apache.zookeeper</groupId>
       <artifactId>zookeeper</artifactId>
       <version>${zookeeper.version}</version>
       <scope>test</scope>
+      <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
     </dependency>
-
+    <!-- Used by the copied Hive Testing Code -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>jsr305</artifactId>
@@ -279,7 +325,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- Logging test dependencies -->
+        <!-- Logging test dependencies -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
@@ -328,7 +374,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-failsafe-plugin</artifactId>
         <configuration>
-          <!-- The Hbase + Hive minicluster setup seems very fragile, so
+                    <!-- The Hbase + Hive minicluster setup seems very fragile, so
             we make sure to run everything as serially as possible -->
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
@@ -369,16 +415,22 @@
               org.apache.hive.shims:hive-shims-common
             </ignoredUnusedDeclaredDependency>
             <ignoredUnusedDeclaredDependency>
-              org.apache.hive:hive-standalone-metastore
-            </ignoredUnusedDeclaredDependency>
-            <ignoredUnusedDeclaredDependency>
               org.apache.hive:hive-storage-api
             </ignoredUnusedDeclaredDependency>
             <ignoredUnusedDeclaredDependency>
-              org.apache.logging.log4j:log4j-core
+              org.apache.hive:hive-serde
             </ignoredUnusedDeclaredDependency>
             <ignoredUnusedDeclaredDependency>
-              org.apache.logging.log4j:log4j-slf4j-impl
+              org.apache.hive:hive-standalone-metastore-common
+            </ignoredUnusedDeclaredDependency>
+            <ignoredUnusedDeclaredDependency>
+              org.apache.hive:hive-standalone-metastore-server
+            </ignoredUnusedDeclaredDependency>
+            <ignoredUnusedDeclaredDependency>
+              org.apache.logging.log4j:log4j-api
+            </ignoredUnusedDeclaredDependency>
+            <ignoredUnusedDeclaredDependency>
+              org.apache.logging.log4j:log4j-core
             </ignoredUnusedDeclaredDependency>
             <ignoredUnusedDeclaredDependency>
               org.apache.logging.log4j:log4j-slf4j-impl
@@ -393,17 +445,12 @@
               org.apache.commons:commons-lang3
             </ignoredUnusedDeclaredDependency>
             <ignoredUnusedDeclaredDependency>
-              org.slf4j:slf4j-api
+              org.apache.commons:commons-compress
             </ignoredUnusedDeclaredDependency>
-            ignoredUnusedDeclaredDependency>
           </ignoredUnusedDeclaredDependencies>
           <ignoredUsedUndeclaredDependencies>
             <ignoredUsedUndeclaredDependency>
               org.antlr:antlr-runtime
-            </ignoredUsedUndeclaredDependency>
-            <!-- I couldn't find it referenced anywhere in the phoenix-hivecodebase -->
-            <ignoredUsedUndeclaredDependency>
-              org.apache.calcite.avatica:avatica
             </ignoredUsedUndeclaredDependency>
           </ignoredUsedUndeclaredDependencies>
           <ignoredNonTestScopedDependencies>
@@ -416,7 +463,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <!-- This may not work due to bootclasspath issues. Make sure to
+                <!-- This may not work due to bootclasspath issues. Make sure to
           compile phoenix5-hive with JDK8 -->
         <configuration>
           <source>8</source>
@@ -426,27 +473,9 @@
     </plugins>
   </build>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.apache.calcite</groupId>
-        <artifactId>calcite-core</artifactId>
-        <version>${calcite.version}</version>
-        <exclusions>
-          <exclusion>
-            <!-- PHOENIX-6478: exclude a dependency that is not required
-              and not available at Maven Central -->
-            <groupId>org.pentaho</groupId>
-            <artifactId>pentaho-aggdesigner-algorithm</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
-
   <profiles>
     <profile>
-      <!-- This only applies when building with 5.1 -->
+            <!-- This only applies when building with 5.1 -->
       <id>exclude-tephra</id>
       <activation>
         <property>
