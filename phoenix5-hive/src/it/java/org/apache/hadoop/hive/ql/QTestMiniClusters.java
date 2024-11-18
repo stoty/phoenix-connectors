@@ -358,7 +358,7 @@ public class QTestMiniClusters {
     if (oldSs != null && canReuseSession
         && clusterType.getCoreClusterType() == CoreClusterType.TEZ) {
       // Copy the tezSessionState from the old CliSessionState.
-      TezSessionState tezSessionState = oldSs.getTezSession();
+      TezSessionState tezSessionState = (TezSessionState) oldSs.getTezSession();
       oldSs.setTezSession(null);
       ss.setTezSession(tezSessionState);
       oldSs.close();
@@ -420,7 +420,7 @@ public class QTestMiniClusters {
     // Create remote dirs once.
     if (getMr() != null) {
       assert fs != null;
-      Path warehousePath = fs.makeQualified(new Path(conf.getVar(ConfVars.METASTORE_WAREHOUSE)));
+      Path warehousePath = fs.makeQualified(new Path(conf.getVar(ConfVars.METASTOREWAREHOUSE)));
       assert warehousePath != null;
       Path hiveJarPath = fs.makeQualified(new Path(conf.getVar(ConfVars.HIVE_JAR_DIRECTORY)));
       assert hiveJarPath != null;
@@ -570,7 +570,7 @@ public class QTestMiniClusters {
     conf.set(CommonConfigurationKeysPublic.FS_DEFAULT_NAME_KEY, fsUriString);
 
     // Remote dirs
-    conf.setVar(ConfVars.METASTORE_WAREHOUSE, warehousePath.toString());
+    conf.setVar(ConfVars.METASTOREWAREHOUSE, warehousePath.toString());
     conf.setVar(ConfVars.HIVE_JAR_DIRECTORY, jarPath.toString());
     conf.setVar(ConfVars.HIVE_USER_INSTALL_DIR, userInstallPath.toString());
     // ConfVars.SCRATCH_DIR - {test.tmp.dir}/scratchdir

@@ -266,8 +266,8 @@ public class PhoenixStorageHandler extends DefaultStorageHandler implements
                     reducerCount + ". Remaining : " + remaining);
         }
 
-        long bytesPerReducer = job.getLong(HiveConf.ConfVars.BYTES_PER_REDUCER.varname,
-                Long.parseLong(HiveConf.ConfVars.BYTES_PER_REDUCER.getDefaultValue()));
+        long bytesPerReducer = job.getLong(HiveConf.ConfVars.BYTESPERREDUCER.varname,
+                Long.parseLong(HiveConf.ConfVars.BYTESPERREDUCER.getDefaultValue()));
         long totalLength = reducerCount * bytesPerReducer;
 
         return new Estimation(0, totalLength);

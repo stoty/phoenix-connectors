@@ -236,9 +236,16 @@
     <!-- FIXME Is this still needed ? Needed to get the older Derby that Hive requires -->
     <dependency>
       <groupId> org.apache.hive</groupId>
-      <artifactId>hive-standalone-metastore-common</artifactId>
+      <artifactId>hive-standalone-metastore</artifactId>
       <version>${hive.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId> org.apache.hive</groupId>
+      <artifactId>hive-standalone-metastore</artifactId>
+      <version>${hive.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
     </dependency>
         <dependency>
             <groupId> org.apache.hive</groupId>
@@ -253,19 +260,6 @@
             <version>${hive.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.hive</groupId>
-            <artifactId>hive-standalone-metastore-server</artifactId>
-            <version>${hive.version}</version>
-            <scope>test</scope>
-            <type>test-jar</type>
-    </dependency>
-            <dependency>
-            <groupId>org.apache.hive</groupId>
-            <artifactId>hive-standalone-metastore-server</artifactId>
-            <version>${hive.version}</version>
-            <scope>test</scope>
-    </dependency>
             <dependency>
             <groupId>org.apache.hive.hcatalog</groupId>
             <artifactId>hive-hcatalog-core</artifactId>
@@ -421,10 +415,10 @@
               org.apache.hive:hive-serde
             </ignoredUnusedDeclaredDependency>
             <ignoredUnusedDeclaredDependency>
-              org.apache.hive:hive-standalone-metastore-common
+              org.apache.hive:hive-standalone-metastore
             </ignoredUnusedDeclaredDependency>
             <ignoredUnusedDeclaredDependency>
-              org.apache.hive:hive-standalone-metastore-server
+              com.google.guava:guava
             </ignoredUnusedDeclaredDependency>
             <ignoredUnusedDeclaredDependency>
               org.apache.logging.log4j:log4j-api

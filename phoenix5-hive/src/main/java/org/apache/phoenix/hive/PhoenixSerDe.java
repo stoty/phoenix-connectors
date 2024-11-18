@@ -68,7 +68,7 @@ public class PhoenixSerDe extends AbstractSerDe {
     }
 
     @Override
-    public void initialize(Configuration conf, Properties tbl, Properties prt) throws SerDeException {
+    public void initialize(Configuration conf, Properties tbl) throws SerDeException {
         tableProperties = tbl;
 
         if (LOG.isDebugEnabled()) {
