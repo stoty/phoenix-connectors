@@ -21,16 +21,16 @@ on:
 
 jobs:
   build:
-    # upgrade to ubuntu-latest after removing Phoenix 4 support
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-18.04
     steps:
     - uses: actions/checkout@v1
     - name: Set up JDK 1.8
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v1
       with:
-        java-version: 8
-        distribution: 'temurin'
+        java-version: 1.8
+    - name: Build
+      run: mvn -B clean install -DskipTests
+    # The build doesn't seem to pick up the result of the install from above, so just re-compile
+    # and the Maven reactor will find it just fine.
     - name: Test
-      run: |
-        mvn -v
-        mvn -B -fae clean install
+      run: mvn -B clean verify
