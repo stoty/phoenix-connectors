@@ -19,13 +19,11 @@
  under the License.
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.apache.phoenix</groupId>
   <artifactId>phoenix-connectors</artifactId>
-  <version>6.0.0-SNAPSHOT</version>
+  <version>6.0.0.7.3.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Apache Phoenix Connectors</name>
   <description>Connectors for third party libraries to access data stored in Phoenix/HBase</description>
@@ -79,16 +77,16 @@
 
   <properties>
     <!-- Phoenix Version -->
-    <phoenix.version>5.2.0</phoenix.version>
+    <phoenix.version>5.1.3.7.3.2.0-SNAPSHOT</phoenix.version>
     <omid.version>1.1.2</omid.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
-    <phoenix.thirdparty.version>2.1.0</phoenix.thirdparty.version>
+    <phoenix.thirdparty.version>1.1.0.7.3.2.0-SNAPSHOT</phoenix.thirdparty.version>
     <!-- These should match the versions used to build HBase and Hadoop -->
-    <hbase.version>2.5.8-hadoop3</hbase.version>
-    <hbase.compat.version>2.5.0</hbase.compat.version>
-    <hadoop.version>3.2.4</hadoop.version>
-    <zookeeper.version>3.8.4</zookeeper.version>
-    <hbase-thirdparty-version>4.1.5</hbase-thirdparty-version>
+    <hbase.version>2.4.17.7.3.2.0-SNAPSHOT</hbase.version>
+    <hbase.compat.version>2.4.1</hbase.compat.version>
+    <hadoop.version>3.1.1.7.3.2.0-SNAPSHOT</hadoop.version>
+    <zookeeper.version>3.8.1.7.3.2.0-SNAPSHOT</zookeeper.version>
+    <hbase-thirdparty-version>4.1.5.7.3.2.0-SNAPSHOT</hbase-thirdparty-version>
     <!-- Hbase version dependent versions end -->
 
     <!-- General Properties -->
@@ -106,7 +104,7 @@
     <surefire.Xmx>3000m</surefire.Xmx>
 
     <!-- Profiling is not enabled in the repo. Placeholder. -->
-    <jacocoArgLine></jacocoArgLine>
+    <jacocoArgLine />
     <!-- Hard to read, but ScalaTest cannot handle multiline argLine. It 
       cannot resolve @{} either -->
     <phoenix-surefire.argLine>-enableassertions -Xmx${surefire.Xmx} -Djava.security.egd=file:/dev/./urandom -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Djdk.net.URLClassPath.disableClassPathURLCheck=true -Dorg.apache.hbase.thirdparty.io.netty.leakDetection.level=advanced -Dio.netty.eventLoopThreads=3 -Duser.timezone="America/Los_Angeles" -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=./target/ "-Djava.library.path=${hadoop.library.path}${path.separator}${java.library.path}"</phoenix-surefire.argLine>
@@ -114,35 +112,35 @@
     <phoenix-surefire.jdk11.flags>-Dorg.apache.hbase.thirdparty.io.netty.tryReflectionSetAccessible=true --add-modules jdk.unsupported --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/jdk.internal.ref=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.util.concurrent=ALL-UNNAMED --add-exports java.base/jdk.internal.misc=ALL-UNNAMED --add-exports java.security.jgss/sun.security.krb5=ALL-UNNAMED</phoenix-surefire.jdk11.flags>
     <phoenix-surefire.jdk11.tuning.flags>${phoenix-surefire.jdk8.tuning.flags}</phoenix-surefire.jdk11.tuning.flags>
     <phoenix-surefire.jdk17.flags>--add-opens java.base/jdk.internal.util.random=ALL-UNNAMED</phoenix-surefire.jdk17.flags>
-    <phoenix-surefire.jdk17.tuning.flags></phoenix-surefire.jdk17.tuning.flags>
+    <phoenix-surefire.jdk17.tuning.flags />
     <!-- Surefire argLine defaults for Linux + JDK8 -->
     <argLine>${phoenix-surefire.argLine} ${phoenix-surefire.jdk8.tuning.flags}</argLine>
 
     <!-- Dependency versions -->
-    <hive3.version>3.1.3</hive3.version>
+    <hive3.version>3.1.3000.7.3.2.0-SNAPSHOT</hive3.version>
     <hive4.version>4.0.0</hive4.version>
     <hive3-storage.version>2.7.0</hive3-storage.version>
     <hive-storage.version>${hive3-storage.version}</hive-storage.version>
     <spark.version>2.4.8</spark.version>
     <scala.version.for.spark2>2.11.12</scala.version.for.spark2>
     <scala.binary.version.for.spark2>2.11</scala.binary.version.for.spark2>
-    <spark3.version>3.4.4</spark3.version>
+    <spark3.version>3.4.1.7.3.2.0-SNAPSHOT</spark3.version>
     <scala.version.for.spark3>2.12.18</scala.version.for.spark3>
     <scala.binary.version.for.spark3>2.12</scala.binary.version.for.spark3>
-    <log4j.version>1.2.17</log4j.version>
+    <log4j.version>1.2.17-cloudera6</log4j.version>
     <log4j2.version>2.23.1</log4j2.version>
     <disruptor.version>3.3.6</disruptor.version>
     <slf4j.version>1.7.36</slf4j.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <commons-csv.version>1.0</commons-csv.version>
     <findbugs-annotations.version>1.3.9-1</findbugs-annotations.version>
-    <mockito-all.version>1.8.5</mockito-all.version>
+    <mockito-all.version>1.10.19</mockito-all.version>
     <junit.version>4.13.2</junit.version>
-    <jodatime.version>2.10.5</jodatime.version>
-    <commons-cli.version>1.4</commons-cli.version>
+    <jodatime.version>2.10.6</jodatime.version>
+    <commons-cli.version>1.5.0</commons-cli.version>
     <commons-compress.version>1.26.0</commons-compress.version>
     <!-- For hive -->
-    <commons-io.version>2.11.0</commons-io.version>
+    <commons-io.version>2.12.0</commons-io.version>
 
     <!-- Plugin versions -->
     <maven-build-helper-plugin.version>3.5.0</maven-build-helper-plugin.version>
@@ -322,8 +320,7 @@
           <artifactId>maven-failsafe-plugin</artifactId>
           <!-- Common settings for all executions -->
           <configuration>
-            <forkNode
-              implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
+            <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
             <encoding>UTF-8</encoding>
             <forkCount>${numForkedIT}</forkCount>
             <runOrder>alphabetical</runOrder>
@@ -443,8 +440,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <forkNode
-            implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
+          <forkNode implementation="org.apache.maven.plugin.surefire.extensions.SurefireForkNodeFactory" />
           <forkCount>${numForkedUT}</forkCount>
           <reuseForks>true</reuseForks>
           <redirectTestOutputToFile>${test.output.tofile}</redirectTestOutputToFile>

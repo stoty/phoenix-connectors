@@ -20,15 +20,12 @@
 
 
 -->
-
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.phoenix</groupId>
     <artifactId>phoenix-connectors</artifactId>
-    <version>6.0.0-SNAPSHOT</version>
+    <version>6.0.0.7.3.2.0-SNAPSHOT</version>
   </parent>
   <artifactId>phoenix5-hive4</artifactId>
   <name>Phoenix Hive 4 Connector for Phoenix 5</name>
@@ -38,7 +35,7 @@
     <test.tmp.dir>${project.build.directory}/tmp</test.tmp.dir>
     <hive.version>${hive4.version}</hive.version>
     <hive-storage.version>${hive.version}</hive-storage.version>
-    <tez.version>0.10.3</tez.version>
+    <tez.version>0.9.1.7.3.2.0-SNAPSHOT</tez.version>
     <commons-lang3.version>3.9</commons-lang3.version>
     <calcite.version>1.25.0</calcite.version>
     <guava.version>33.2.1-jre</guava.version>
