@@ -226,6 +226,12 @@
       <artifactId>commons-lang3</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>1.10.0</version>
+    </dependency>
+
     <!-- Hive test dependencies -->
 
     <!-- FIXME Is this still needed ? Needed to get the older Derby that Hive requires -->
@@ -351,6 +357,13 @@
       <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-reload4j</artifactId>
+      <version>1.7.36</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -432,6 +445,12 @@
             </ignoredUnusedDeclaredDependency>
             <ignoredUnusedDeclaredDependency>
               org.apache.commons:commons-lang3
+            </ignoredUnusedDeclaredDependency>
+            <ignoredUnusedDeclaredDependency>
+              org.apache.commons:commons-text
+            </ignoredUnusedDeclaredDependency>
+            <ignoredUnusedDeclaredDependency>
+              org.slf4j:slf4j-reload4j
             </ignoredUnusedDeclaredDependency>
             <ignoredUnusedDeclaredDependency>
               org.apache.commons:commons-compress

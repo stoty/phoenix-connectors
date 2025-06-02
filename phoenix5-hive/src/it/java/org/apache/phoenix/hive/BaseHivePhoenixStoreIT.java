@@ -112,7 +112,7 @@ public class BaseHivePhoenixStoreIT extends BaseTest {
             "false");
         testHiveConf.put(HiveConf.ConfVars.METASTORE_AUTO_CREATE_ALL,"true");
         testHiveConf.put(HiveConf.ConfVars.HIVE_CHECK_CROSS_PRODUCT,"false");
-
+        testHiveConf.put(HiveConf.ConfVars.HIVE_EXECUTION_ENGINE, clusterType.toString());
         try {
             QTestArguments qtArgs = QTestArguments.QTestArgumentsBuilder.instance()
                     .withOutDir(hiveOutputDir)
