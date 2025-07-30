@@ -84,7 +84,7 @@
     <!-- These should match the versions used to build HBase and Hadoop -->
     <hbase.version>2.6.1.7.3.2.0-SNAPSHOT</hbase.version>
     <hbase.compat.version>2.6.0</hbase.compat.version>
-    <hadoop.version>3.1.1.7.3.2.0-SNAPSHOT</hadoop.version>
+    <hadoop.version>3.4.1.7.3.2.0-SNAPSHOT</hadoop.version>
     <zookeeper.version>3.8.1.7.3.2.0-SNAPSHOT</zookeeper.version>
     <hbase-thirdparty-version>4.1.10.7.3.2.0-SNAPSHOT</hbase-thirdparty-version>
     <!-- Hbase version dependent versions end -->
