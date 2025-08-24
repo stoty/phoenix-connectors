@@ -35,7 +35,7 @@
     <spark.version>${spark3.version}</spark.version>
     <scala.version>${scala.version.for.spark3}</scala.version>
     <scala.binary.version>${scala.binary.version.for.spark3}</scala.binary.version>
-    <jodatime.version>2.10.6</jodatime.version>
+    <jodatime.version>2.12.7</jodatime.version>
   </properties>
 
   <dependencies>
