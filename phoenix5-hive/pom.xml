@@ -400,6 +400,8 @@
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <configuration>
+          <!-- Disable for Hive rebase -->
+          <skip>true</skip>
           <ignoredUnusedDeclaredDependencies>
             <ignoredUnusedDeclaredDependency>
               org.apache.hbase:hbase-testing-util
